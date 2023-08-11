@@ -13,7 +13,10 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
+import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
+import jakarta.websocket.server.PathParam;
+import med.mmalpi.api.medico.DatosActualizarMedico;
 import med.mmalpi.api.medico.DatosListadoMedico;
 import med.mmalpi.api.medico.DatosRegistroMedico;
 import med.mmalpi.api.medico.Medico;
@@ -26,15 +29,41 @@ public class MedicoController {
 	@Autowired
 	private MedicoRepository medicoRepository;
 	
-	@PostMapping
+	@PostMapping("/guardarMedico")
 	public void registrarMedico(@RequestBody @Valid DatosRegistroMedico datosRegistroMedico) {
 		medicoRepository.save(new Medico(datosRegistroMedico));
 	}
 	
-	@GetMapping
+	@GetMapping("/listado")
 	public Page<DatosListadoMedico> listadoMedicos(@PageableDefault(size = 2) Pageable paginacion){
-		return medicoRepository.findAll(paginacion).map(DatosListadoMedico::new);
+		//return medicoRepository.findAll(paginacion).map(DatosListadoMedico::new);
+		
+		//customQuery
+		return medicoRepository.findByStatusTrue(paginacion).map(DatosListadoMedico::new);
 	}
+	
+	@PutMapping("/actualizacion")
+	@Transactional //necesary for commit the transaction to the db for the whole method and if an error exist, a rollback happens
+	public void actualizarMedico(@RequestBody @Valid DatosActualizarMedico datosAcutalizarMedico) {
+		Medico medico = medicoRepository.getReferenceById(datosAcutalizarMedico.id());
+		medico.actualizarDatos(datosAcutalizarMedico);
+	}
+	
+	//logic delete
+	@DeleteMapping("/{id}") //dinamic variable
+	@Transactional //necesary for commit the transaction to the db for the whole method and if an error exist, a rollback happens
+	public void eliminarMedico(@PathVariable Long id) {
+		Medico medico = medicoRepository.getReferenceById(id);
+		medico.desactivarMedico();
+	} 
+	
+	//perma delete
+//	@DeleteMapping("/{id}") //dinamic variable
+//	@Transactional //necesary for commit the transaction to the db for the whole method and if an error exist, a rollback happens
+//	public void eliminarMedico(@PathVariable Long id) {
+//		Medico medico = medicoRepository.getReferenceById(id);
+//		medicoRepository.delete(medico);
+//	}
 	
 	 // Manejo de excepciones para datos de entrada no válidos personalizado //custom error handler
 	//ejemplo // example 
