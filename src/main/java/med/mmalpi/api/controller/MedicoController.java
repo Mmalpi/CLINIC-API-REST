@@ -44,7 +44,7 @@ public class MedicoController {
 	public ResponseEntity<Page<DatosListadoMedico>> listadoMedicos(@PageableDefault(size = 2) Pageable paginacion){
 		//return medicoRepository.findAll(paginacion).map(DatosListadoMedico::new);
 		
-		//customQuery							find by "custom" 
+		//customQuery								find by "custom" 
 		return ResponseEntity.ok(medicoRepository.findByStatusTrue(paginacion).map(DatosListadoMedico::new));
 	}
 	
