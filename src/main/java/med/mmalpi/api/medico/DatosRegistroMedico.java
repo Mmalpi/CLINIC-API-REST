@@ -12,10 +12,13 @@ public record DatosRegistroMedico(
 		
 		@NotBlank
 		String nombre,
-		@NotBlank
-		@Email
+		
+		//custom return errors
+		@NotBlank(message = "Email es obligatorio")
+		@Email(message = "Formato de email es inválido")
 		String email,
-		@NotBlank
+		//custom error from validation messages.properties
+		@NotBlank(message = "{telefono.obligatorio}")
 		@Pattern(regexp = "^[0-9]{7,15}$")
 		String telefono,
 		@NotBlank
