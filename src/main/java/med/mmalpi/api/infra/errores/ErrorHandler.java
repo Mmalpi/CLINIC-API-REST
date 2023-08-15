@@ -1,4 +1,4 @@
-package med.mmalpi.api.infra;
+package med.mmalpi.api.infra.errores;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
